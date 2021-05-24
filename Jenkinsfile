@@ -7,7 +7,9 @@ pipeline {
 
     stages{
         stage('cloning the repo') {
-            git "https://github.com/ahmedshakshak/GoViolin" 
+            steps {
+                git "https://github.com/ahmedshakshak/GoViolin" 
+            }
         }
 
         stage('building image') {
