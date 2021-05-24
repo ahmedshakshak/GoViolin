@@ -5,29 +5,31 @@ pipeline {
         dockerImage = ''
     }
 
-    stage('cloning the repo') {
-        git "https://github.com/ahmedshakshak/GoViolin" 
-    }
+    stages{
+        stage('cloning the repo') {
+            git "https://github.com/ahmedshakshak/GoViolin" 
+        }
 
-    stage('building image') {
-        steps {
-            script {
-                dockerImage = docker.build registry + ":$BUILD_NUMBER"
+        stage('building image') {
+            steps {
+                script {
+                    dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                }
             }
         }
-    }
 
-    stage('pushing image') {
-        steps {
-            docker.withRegistery('', registryCredential) {
-                dockerImage.push()
+        stage('pushing image') {
+            steps {
+                docker.withRegistery('', registryCredential) {
+                    dockerImage.push()
+                }
             }
         }
-    }
 
-    stage("removing image") {
-        steps {
-            sh "docker rmi $registry:$BUILD_NUMBER"
+        stage("removing image") {
+            steps {
+                sh "docker rmi $registry:$BUILD_NUMBER"
+            }
         }
     }
 }
