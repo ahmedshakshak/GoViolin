@@ -4,20 +4,21 @@ pipeline {
     environment {
         registry = "ahmedshakshak/go-violin"
         registryCredential = 'docker-creds'
+        REPORTING_EMAIL = 'ahmedshakshak.fcis@gmail.com'
         dockerImage = ''
     }
 
     stages{
-        stage('cloning the repo') {
-            steps {
-                git "https://github.com/ahmedshakshak/GoViolin" 
-            }
-        }
-
         stage('building image') {
             steps {
                 script {
                     dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                }
+
+                post {
+                    failure {
+                        mail bcc: '', body: "Project: $JOB_NAME<br>Build Number: $BUILD_NUMBER<br>build URL: $BUILD_URL", cc: '', charset: 'UTF-8', from: '', mimeType: 'text/html', replyTo: '', subject: "ERROR CI: Project name -> $JOB_NAME", to: "$REPORTING_EMAIL";  
+                    }
                 }
             }
         }
