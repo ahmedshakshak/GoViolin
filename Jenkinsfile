@@ -12,7 +12,10 @@ pipeline {
         stage('building image') {
             steps {
                 script {
-                    dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                    //dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                        sh "exit 1"
+                    }
                 }
             }
 
