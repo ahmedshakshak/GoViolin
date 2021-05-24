@@ -12,7 +12,9 @@ pipeline {
         stage('building image') {
             steps {
                 catchError {
-                    sh "exit 1"
+                    script {
+                        dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                    }
                 }
             }
 
@@ -33,7 +35,7 @@ pipeline {
             }
         }
 
-        stage("removing image") {
+        stage("removing local image") {
             steps {
                 sh "docker rmi $registry:$BUILD_NUMBER"
             }
