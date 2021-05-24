@@ -1,4 +1,6 @@
 pipeline {
+    agent any
+    
     environment {
         registry = "ahmedshakshak/go-violin"
         registryCredential = 'docker-creds'
