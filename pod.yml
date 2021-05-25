@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: go-violin
+  labels:
+    app: go-violin
+spec:
+  containers:
+  - name: go-violin
+    image: ahmedshakshak/go-violin
+    ports:
+    - containerPort: 8080

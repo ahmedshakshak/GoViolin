@@ -3,13 +3,13 @@ pipeline {
     
     environment {
         registry = "ahmedshakshak/go-violin"
-        registryCredential = 'docker-creds'
-        REPORTING_EMAIL = 'ahmedshakshak.fcis@gmail.com'
-        dockerImage = ''
+        registryCredential = "docker-creds"
+        REPORTING_EMAIL = "ahmedshakshak.fcis@gmail.com"
+        kubeconfigId = "kubeconfigId"
     }
 
     stages{
-        stage('building image') {
+        stage("Building image") {
             steps {
                 catchError {
                     script {
@@ -20,24 +20,32 @@ pipeline {
 
             post {
                 failure {
-                    mail bcc: '', body: "Project: $JOB_NAME<br>Build Number: $BUILD_NUMBER<br>build URL: $BUILD_URL", cc: '', charset: 'UTF-8', from: '', mimeType: 'text/html', replyTo: '', subject: "ERROR CI: Project name -> $JOB_NAME", to: "$REPORTING_EMAIL";  
+                    mail bcc: "", body: "Project: $JOB_NAME<br>Build Number: $BUILD_NUMBER<br>build URL: $BUILD_URL", cc: "", charset: "UTF-8", from: "", mimeType: "text/html", replyTo: "", subject: "ERROR CI: Project name -> $JOB_NAME", to: "$REPORTING_EMAIL";  
                 }
             }
         }
 
-        stage('pushing image') {
+        stage("Pushing image") {
             steps {
                 script {
-                    docker.withRegistry('', registryCredential) {
+                    docker.withRegistry("", registryCredential) {
                         dockerImage.push("latest")
                     }
                 }
             }
         }
 
-        stage("removing local image") {
+        stage("Removing local image") {
             steps {
                 sh "docker rmi $registry:$BUILD_NUMBER"
+            }
+        }
+
+        stage("Deployig") {
+            steps {
+                script {
+                   kubernetesDeploy(configs: "deployment.yml", kubeconfigId: kubeconfigId)
+                }
             }
         }
     }
